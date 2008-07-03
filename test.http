@@ -1,7 +1,0 @@
-POST /rest HTTP/1.1
-Host: localhost
-Content-Length: 85
-
-<message to="nolan@localhost" from="localhost/rest">
-  <body>World</body>
-</message>
