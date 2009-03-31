@@ -42,16 +42,31 @@ With that configuration, you can send HTTP POST requests to the URL:
   http://localhost:5285/rest
 
 Configurable options:
-  allowed_ips: Define which IP addresses can connect to the rest service.
-  Allowed values are: 'all', or a list of allowed IP addresses, expressed as Erlang tuples.
+
+  allowed_ips: IP addresses that can connect to the rest service.
+  Allowed values: 'all' or a list of Erlang tuples.
   Default value: all
-  In this example only the two defined IP addresses are allowed:
-    {modules,
-     [
-      {mod_rest, [{allowed_ips, [ {127,0,0,1}, {192, 168, 1, 12} ]}]},
-      ...
-     ]
-    }.
+
+  allowed_destinations: Allowed destination Jabber ID addresses in the stanza.
+  Allowed values: 'all' or a list of strings.
+  Default value: all
+
+  allowed_stanza_types: Allowed stanza types of the posted stanza.
+  Allowed values: 'all' or a list of strings.
+  Default value: all
+
+Complex example configuration:
+{modules,
+ [
+  {mod_rest, [
+              {allowed_ips, [ {127,0,0,1}, {192,168,1,12} ]},
+              {allowed_destinations, [ "nolan@localhost", "admin@example.com" ]},
+              {allowed_stanza_types, [ "message", "presence", "iq" ]}
+             ]
+  },
+  ...
+ ]
+}.
 
 Since this module does not require HTTP authentication to send
 messages, you need to restrict the port using a firewall or allowed_ips option.
@@ -70,7 +85,6 @@ Host: localhost
 Content-Length: 85
 
 <message to="nolan@localhost" from="localhost/rest"><body>World</body></message>
-
 
 
 	EXAMPLE CALL FROM SHELL
@@ -117,8 +131,9 @@ I(<0.484.0>:ejabberd_listener:201) : (#Port<0.3661>) Accepted connection {{127,0
 I(<0.251.0>:ejabberd_http:127) : started: {gen_tcp,#Port<0.3661>}
 
 =INFO REPORT==== 2-Mar-2009::11:46:05 ===
-I(<0.515.0>:mod_rest:71) : Got request from localhost/rest with IP
-{{127,0,0,1}, 55945} to nolan@localhost:
+I(<0.841.0>:mod_rest:81) : Got request from localhost/rest
+with IP {{127,0,0,1},49613}
+to nolan@localhost:
 {xmlelement,"message",
             [{"to","nolan@localhost"},{"from","localhost/rest"}],
             [{xmlelement,"body",[],[{xmlcdata,<<"World">>}]}]}
