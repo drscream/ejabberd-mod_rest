@@ -22,7 +22,7 @@ following to your configuration:
 Enable the module:
 {modules,
  [
-  {mod_rest, []},
+  {mod_rest, [ {allowed_ips, [ {127,0,0,1} ]} ]},
   ...
  ]
 }.
@@ -41,8 +41,20 @@ And enable the HTTP request handler in the listen section:
 With that configuration, you can send HTTP POST requests to the URL:
   http://localhost:5285/rest
 
+Configurable options:
+  allowed_ips: Define which IP addresses can connect to the rest service.
+  Allowed values are: 'all', or a list of allowed IP addresses, expressed as Erlang tuples.
+  Default value: all
+  In this example only the two defined IP addresses are allowed:
+    {modules,
+     [
+      {mod_rest, [{allowed_ips, [ {127,0,0,1}, {192, 168, 1, 12} ]}]},
+      ...
+     ]
+    }.
+
 Since this module does not require HTTP authentication to send
-messages, you need to restrict the port using a firewall for example.
+messages, you need to restrict the port using a firewall or allowed_ips option.
 Otherwise the feature could be abused by attackers to send spam.
 
 In ejabberd 2.0.x versions,

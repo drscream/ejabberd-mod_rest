@@ -63,16 +63,33 @@ stop(_Host) ->
 
 process([], #request{method = 'POST',
 		     data = Data,
-		     ip = Ip
+		     host = Host,
+		     ip = ClientIp
 		    }) ->
+    try_post_request(Data, Host, ClientIp);
+process(_Path, _Request) ->
+    ?DEBUG("Got request to ~p: ~p", [_Path, _Request]),
+    {200, [], "Try POSTing a stanza."}.
+
+
+try_post_request(Data, Host, ClientIp) ->
     Stanza = xml_stream:parse_element(Data),
     From = jlib:string_to_jid(xml:get_tag_attr_s("from", Stanza)),
     To = jlib:string_to_jid(xml:get_tag_attr_s("to", Stanza)),
     ?INFO_MSG("Got request from ~s with IP ~p to ~s:~n~p",
 	      [jlib:jid_to_string(From),
-	       Ip,
+	       ClientIp,
 	       jlib:jid_to_string(To),
 	       Stanza]),
+    case check_ip_allowed(Host, ClientIp) of
+	true ->
+	    post_request(Stanza, From, To);
+	false ->
+	    ?INFO_MSG("Request discarded because IP is not allowed", []),
+	    {406, [], "Error: Disallowed IP address"}
+    end.
+
+post_request(Stanza, From, To) ->
     try
 	{xmlelement, "message", _Attrs, _Kids} = Stanza,
 	case ejabberd_router:route(From, To, Stanza) of
@@ -82,7 +99,12 @@ process([], #request{method = 'POST',
     catch
 	error:{badmatch, _} -> {406, [], "Error: can only accept <message/>"};
 	  error:{Reason, _} -> {500, [], "Error: " ++ atom_to_list(Reason)}
-    end;
-process(_Path, _Request) ->
-    ?DEBUG("Got request to ~p: ~p", [_Path, _Request]),
-    {200, [], "Try POSTing a stanza."}.
+    end.
+
+check_ip_allowed(Host, {ClientAddress, _PortNumber}) ->
+    case gen_mod:get_module_opt(Host, ?MODULE, allowed_ips, all) of
+	all -> true;
+	AllowedIPs ->
+	    ?INFO_MSG("Host: ~p", [Host]),
+	    lists:member(ClientAddress, AllowedIPs)
+    end.
