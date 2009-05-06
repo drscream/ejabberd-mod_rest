@@ -183,12 +183,12 @@ This example Python code first calls to send a stanza, and then calls to execute
 -------
 import urllib2
 
-server_url = 'http://localhost:5280/rest/';
+server_url = 'http://localhost:5280/rest/'
 
 call = '<message to="user1@localhost" from="localhost/rest"><body>World</body></message>'
 resp = urllib2.urlopen(server_url, call)
 result = resp.read()
-print "Rresult
+print result
 
 call = 'registered_users localhost'
 resp = urllib2.urlopen(server_url, call)
