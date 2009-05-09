@@ -47,9 +47,14 @@ With that configuration, you can send HTTP POST requests to the URL:
 
 Configurable options:
 
-  allowed_ips: IP addresses that can connect to the rest service.
+  allowed_ips: IP addresses that can use the rest service.
   Allowed values: 'all' or a list of Erlang tuples.
   Default value: all
+  Notice that the IP address is checked after the connection is established.
+  If you want to restrict the IP address that listens connections, and
+  only allow a certain IP to be able to connect to the port, then the
+  option allowed_ips is not useful to you: you better define the
+  listening IP address in the ejabberd listeners (see the ejabberd Guide).
 
   allowed_destinations: Allowed destination Jabber ID addresses in the stanza.
   Allowed values: 'all' or a list of strings.
@@ -79,9 +84,10 @@ Complex example configuration:
  ]
 }.
 
-Since this module does not require HTTP authentication to send
-messages, you need to restrict the port using a firewall or allowed_ips option.
-Otherwise the feature could be abused by attackers to send spam.
+This module gives many power to perform tasks in ejabberd,
+such power in bad hands can harm your server, so you should  
+restrict the IP address that can connect to the service using:
+a firewall, allowed_ips option, or the listener IP option.
 
 In ejabberd 2.0.x versions,
 it is important that the value indicated in Content-Length matches
