@@ -87,13 +87,18 @@ maybe_post_request([$< | _ ] = Data, Host, ClientIp) ->
 maybe_post_request(Data, Host, _ClientIp) ->
     ?INFO_MSG("Data: ~p", [Data]),
     Args = split_line(Data),
-    AccessCommands = gen_mod:get_module_opt(Host, ?MODULE, access_commands, []),
+    AccessCommands = get_option_access(Host),
     case ejabberd_ctl:process2(Args, AccessCommands) of
 	{String, ?STATUS_SUCCESS} ->
 	    {200, [], String};
 	{String, _Code} ->
 	    {500, [], String}
     end.
+
+%% This function throws an error if the module is not started in that VHost.
+get_option_access(Host) ->
+    true = gen_mod:is_loaded(Host, ?MODULE),
+    gen_mod:get_module_opt(Host, ?MODULE, access_commands, []).
 
 
 %% This function crashes if the stanza does not satisfy configured restrictions
