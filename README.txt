@@ -181,6 +181,8 @@ Saving to: `index.html'
 The content of the index.html is simply:
 Ok
 
+Please notice that mod_rest and wget don't work correctly over HTTPS.
+
 
 	EXAMPLE CALL WITH PYTHON
 	========================
