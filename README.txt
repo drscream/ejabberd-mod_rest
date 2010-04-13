@@ -203,3 +203,29 @@ resp = urllib2.urlopen(server_url, call)
 result = resp.read()
 print result
 -------
+
+
+	EXAMPLE CALL WITH PHP
+	=====================
+
+This example PHP code implements a call execute a command:
+-------
+<?
+function sendRESTRequest ($url, $xml) {
+    $context = stream_context_create(
+         array('http' =>
+                        array(
+                                'method' => "POST",
+                                'header' => "Host: localhost:5280\nContent-Type: text/html; charset=utf-8",
+                                'content' => $xml
+                        )
+            )
+    );
+    $file = file_get_contents($url, false, $context);
+    echo "Response: $file\n";
+}
+$url = "http://127.0.0.1:5280/rest";
+$request = "register user12 localhost somepass";
+sendRESTRequest($url, $request);
+?>
+-------
