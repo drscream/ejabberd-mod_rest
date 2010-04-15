@@ -208,24 +208,35 @@ print result
 	EXAMPLE CALL WITH PHP
 	=====================
 
-This example PHP code implements a call execute a command:
+This example PHP code implements a call to execute a command (thanks to Qu1cksand):
 -------
 <?
-function sendRESTRequest ($url, $xml) {
-    $context = stream_context_create(
-         array('http' =>
-                        array(
-                                'method' => "POST",
-                                'header' => "Host: localhost:5280\nContent-Type: text/html; charset=utf-8",
-                                'content' => $xml
-                        )
-            )
-    );
-    $file = file_get_contents($url, false, $context);
-    echo "Response: $file\n";
+function sendRESTRequest ($url, $request) {
+    // Create a stream context so that we can POST the REST request to $url
+    $context = stream_context_create (array ('http' => array ('method' => 'POST'
+                                            ,'header' => "Host: localhost:5280\nContent-Type: text/html; charset=utf-8\nContent-Length: ".strlen($request)
+                                            ,'content' => $request)));
+    // Use file_get_contents for PHP 5+ otherwise use fopen, fread, fclose
+    if (version_compare(PHP_VERSION, '5.0.0', '>=')) {
+        $result = file_get_contents($url, false, $context);
+    } else {
+        // This is the PHP4 workaround which is slightly less elegant
+        // Suppress fopen warnings, otherwise they interfere with the page headers
+        $fp = @fopen($url, 'r', false, $context);
+        $result = '';
+        // Only proceed if we have a file handle, otherwise we enter an infinite loop
+        if ($fp) {
+            while(!feof($fp)) {
+                $result .= fread($fp, 4096);
+            }
+            fclose($fp);
+        }
+    }
+    return $result;
 }
-$url = "http://127.0.0.1:5280/rest";
+$url = "http://localhost:5280/rest";
 $request = "register user12 localhost somepass";
-sendRESTRequest($url, $request);
+$response = sendRESTRequest($url, $request);
+echo "Response: $response\n";
 ?>
 -------
