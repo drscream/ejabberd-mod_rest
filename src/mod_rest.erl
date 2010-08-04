@@ -54,7 +54,8 @@ process([], #request{method = 'POST',
 	check_member_option(Host, ClientAddress, allowed_ips),
 	maybe_post_request(Data, Host, ClientIp)
     catch
-	error:{badmatch, _} ->
+	error:{badmatch, _} = Error ->
+	    ?DEBUG("Error when processing REST request: ~nData: ~p~nError: ~p", [Data, Error]),
 	    {406, [], "Error: REST request is rejected by service."}
     end;
 process(Path, Request) ->
@@ -77,13 +78,16 @@ maybe_post_request([$< | _ ] = Data, Host, ClientIp) ->
 		   Stanza]),
 	post_request(Stanza, From, To)
     catch
-	error:{badmatch, _} ->
+	error:{badmatch, _} = Error ->
+	    ?DEBUG("Error when processing REST request: ~nData: ~p~nError: ~p", [Data, Error]),
 	    {406, [], "Error: REST request is rejected by service."};
-	error:{Reason, _} ->
+	error:{Reason, _} = Error ->
+	    ?DEBUG("Error when processing REST request: ~nData: ~p~nError: ~p", [Data, Error]),
 	    {500, [], "Error: " ++ atom_to_list(Reason)};
-	_ ->
+	Error ->
+	    ?DEBUG("Error when processing REST request: ~nData: ~p~nError: ~p", [Data, Error]),
 	    {500, [], "Error"}
-    end;
+    end;    
 maybe_post_request(Data, Host, _ClientIp) ->
     ?INFO_MSG("Data: ~p", [Data]),
     Args = split_line(Data),
