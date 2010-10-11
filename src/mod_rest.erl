@@ -101,7 +101,10 @@ maybe_post_request(Data, Host, _ClientIp) ->
 
 %% This function throws an error if the module is not started in that VHost.
 get_option_access(Host) ->
-    true = gen_mod:is_loaded(Host, ?MODULE),
+    case gen_mod:is_loaded(Host, ?MODULE) of
+	true -> ok;
+	_ -> throw({module_must_be_started_in_vhost, ?MODULE, Host})
+    end,
     gen_mod:get_module_opt(Host, ?MODULE, access_commands, []).
 
 
