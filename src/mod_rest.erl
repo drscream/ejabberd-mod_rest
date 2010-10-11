@@ -100,13 +100,15 @@ maybe_post_request(Data, Host, _ClientIp) ->
     end.
 
 %% This function throws an error if the module is not started in that VHost.
-get_option_access(Host) ->
+try_get_option(Host, OptionName, DefaultValue) ->
     case gen_mod:is_loaded(Host, ?MODULE) of
 	true -> ok;
 	_ -> throw({module_must_be_started_in_vhost, ?MODULE, Host})
     end,
-    gen_mod:get_module_opt(Host, ?MODULE, access_commands, []).
+    gen_mod:get_module_opt(Host, ?MODULE, OptionName, DefaultValue).
 
+get_option_access(Host) ->
+    try_get_option(Host, access_commands, []).
 
 %% This function crashes if the stanza does not satisfy configured restrictions
 check_stanza(Stanza, _From, To, Host) ->
@@ -116,7 +118,7 @@ check_stanza(Stanza, _From, To, Host) ->
     allowed.
 
 check_member_option(Host, Element, Option) ->
-    true = case gen_mod:get_module_opt(Host, ?MODULE, Option, all) of
+    true = case try_get_option(Host, Option, all) of
 	       all -> true;
 	       AllowedValues -> lists:member(Element, AllowedValues)
 	   end.
