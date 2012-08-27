@@ -184,6 +184,16 @@ Ok
 Please notice that mod_rest and wget don't work correctly over HTTPS.
 
 
+	EXAMPLE AUTH COMMAND WITH WGET
+	==============================
+
+To execute an ejabberd command, simply provide its name and arguments as in ejabberdctl:
+wget http://localhost:5280/rest/ --server-response --post-data 'registered_users localhost'
+
+If you configure access_commands option, you must provide the credentials like this:
+ wget http://localhost:5280/rest/ --server-response --post-data '--auth user1 localhost thepass registered_users localhost'
+
+
 	EXAMPLE CALL WITH PYTHON
 	========================
 

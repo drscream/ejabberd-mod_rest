@@ -93,10 +93,14 @@ maybe_post_request(Data, Host, _ClientIp) ->
     Args = split_line(Data),
     AccessCommands = get_option_access(Host),
     case ejabberd_ctl:process2(Args, AccessCommands) of
+	{"", ?STATUS_SUCCESS} ->
+	    {200, [], integer_to_list(?STATUS_SUCCESS)};
 	{String, ?STATUS_SUCCESS} ->
 	    {200, [], String};
+	{"", Code} ->
+	    {200, [], integer_to_list(Code)};
 	{String, _Code} ->
-	    {500, [], String}
+	    {200, [], String}
     end.
 
 %% This function throws an error if the module is not started in that VHost.
