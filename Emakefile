@@ -1,1 +1,1 @@
-{'src/mod_rest',	[{outdir, "ebin"},{i,"../../ejabberd-dev/trunk/include"}]}.
+{'src/mod_rest',	[{outdir, "ebin"},{i,"/usr/lib/ejabberd/include"}]}.
