@@ -126,12 +126,12 @@ to nolan@localhost:
 
 #### If the user nolan@localhost exists, he will receive this message:
 
-<pre>
+```
 <message from='localhost/rest'
 	 to='nolan@localhost'>
   <body>World</body>
 </message>
-</pre>
+```
 
 Instead of an XMPP stanza, you can provide an ejabberd command to execute:
 `registered_users localhost`
@@ -145,8 +145,9 @@ about a local Jabber account with enough privileges according to your option:
 
 This example shows how to send a POST using Lynx:
 
-<pre>
+```
 $ lynx http://localhost:5280/rest/ -mime_header -post_data
+
 <message to="nolan@localhost" from="localhost/rest"><body>World</body></message>
 ---
 HTTP/1.0 200 OK
@@ -155,13 +156,13 @@ Content-Type: text/html; charset=utf-8
 Content-Length: 2
 
 Ok
-</pre>
+```
 
 ### EXAMPLE CALL WITH WGET
 
 This example shows how to send a POST using Wget:
 
-<pre>
+```
 $ wget http://localhost:5280/rest/ --server-response --post-data '<message to="nolan@localhost" from="localhost/rest"><body>World</body></message>'
 
 --2009-03-02 12:01:42--  http://localhost:5280/rest/
@@ -182,7 +183,7 @@ Saving to: `index.html'
 
 The content of the index.html is simply:
 Ok
-</pre>
+```
 
 Please notice that `mod_rest` and wget don't work correctly over HTTPS.
 
